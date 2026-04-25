@@ -332,7 +332,7 @@ export default function App() {
         name:"The Career Breweries",
         description:`Resume Build — ${formData.targetTitle||""}`,
         order_id:order.orderId,
-        prefill:{email:formData.email,contact:formData.phone||""},
+        prefill:{email:formData.email},
         theme:{color:C.amber},
         handler:async(response)=>{
           try{
@@ -841,7 +841,7 @@ export default function App() {
                   <div className="fade-in" style={{background:"#1C1410",borderRadius:"14px",padding:"20px 24px"}}>
                     <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:C.amber,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>You have the resume. Now prepare for the interview.</div>
                     <p style={{fontSize:"14px",color:"rgba(255,255,255,0.75)",lineHeight:1.65,marginBottom:"14px"}}>AI-calibrated questions based on your role and resume. Practice your answers, get feedback, walk in prepared.</p>
-                    <a href={"https://tcb-interview-sim.vercel.app?from=builder&jobTitle="+encodeURIComponent(formData.targetTitle||"")+"&company="+encodeURIComponent(formData.targetCompany||"")} target="_blank" rel="noreferrer"
+                    <a href={"https://tcb-interview-simulator.vercel.app?from=builder&jobTitle="+encodeURIComponent(formData.targetTitle||"")+"&company="+encodeURIComponent(formData.targetCompany||"")} target="_blank" rel="noreferrer"
                       style={{display:"inline-flex",alignItems:"center",background:C.amber,color:C.cream,borderRadius:"10px",padding:"10px 20px",fontSize:"13px",fontWeight:600,textDecoration:"none",gap:"6px"}}>
                       Start interview simulation — ₹999 →
                     </a>
