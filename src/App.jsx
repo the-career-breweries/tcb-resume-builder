@@ -810,9 +810,52 @@ export default function App() {
                     <Ghost onClick={downloadPDF}>↓ Download PDF</Ghost>
                   </div>
                 </div>
-                <div style={{background:C.mist,border:"1px solid "+C.border,borderRadius:"12px",padding:"14px 18px"}}>
-                  <p style={{fontSize:"13px",color:C.soft,lineHeight:1.6,marginBottom:"10px"}}>Want this rewritten specifically for this role after reviewing?</p>
-                  <a href={"https://tcb-resume-rewrite.vercel.app?from=builder&jobTitle="+encodeURIComponent(formData.targetTitle||"")+"&company="+encodeURIComponent(formData.targetCompany||"")} target="_blank" rel="noreferrer" style={{fontSize:"13px",color:C.amber,fontWeight:600,textDecoration:"none"}}>Rewrite for this role — ₹1,499 →</a>
+                {/* Smart next steps — never show Builder again */}
+                <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+
+                  {/* Rewriter — general resume path */}
+                  {formData.forSpecificRole !== "yes" && (
+                    <div className="fade-in" style={{background:C.mist,border:"1px solid "+C.border,borderRadius:"14px",padding:"18px 22px"}}>
+                      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:C.amber,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>Ready to apply for a specific role?</div>
+                      <p style={{fontSize:"14px",color:C.ink,lineHeight:1.6,marginBottom:"12px"}}>Your resume is built. Now tailor it to the role you're targeting — every section rewritten to match the JD.</p>
+                      <a href={"https://tcb-resume-rewrite.vercel.app?from=builder"} target="_blank" rel="noreferrer"
+                        style={{display:"inline-flex",alignItems:"center",gap:"6px",color:C.amber,fontSize:"13px",fontWeight:600,textDecoration:"none"}}>
+                        Rewrite for a specific role — ₹1,499 →
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Rewriter — specific role path */}
+                  {formData.forSpecificRole === "yes" && (
+                    <div className="fade-in" style={{background:C.mist,border:"1px solid "+C.border,borderRadius:"14px",padding:"18px 22px"}}>
+                      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:C.amber,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>Applying elsewhere too?</div>
+                      <p style={{fontSize:"14px",color:C.ink,lineHeight:1.6,marginBottom:"12px"}}>Each role deserves its own version. Upload this resume to the Rewriter and tailor it to a different JD in minutes.</p>
+                      <a href={"https://tcb-resume-rewrite.vercel.app?from=builder&jobTitle="+encodeURIComponent(formData.targetTitle||"")+"&company="+encodeURIComponent(formData.targetCompany||"")} target="_blank" rel="noreferrer"
+                        style={{display:"inline-flex",alignItems:"center",gap:"6px",color:C.amber,fontSize:"13px",fontWeight:600,textDecoration:"none"}}>
+                        Rewrite for another role — ₹1,499 →
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Interview Simulation */}
+                  <div className="fade-in" style={{background:"#1C1410",borderRadius:"14px",padding:"20px 24px"}}>
+                    <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:C.amber,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>You have the resume. Now prepare for the interview.</div>
+                    <p style={{fontSize:"14px",color:"rgba(255,255,255,0.75)",lineHeight:1.65,marginBottom:"14px"}}>AI-calibrated questions based on your role and resume. Practice your answers, get feedback, walk in prepared.</p>
+                    <a href={"https://tcb-interview-sim.vercel.app?from=builder&jobTitle="+encodeURIComponent(formData.targetTitle||"")+"&company="+encodeURIComponent(formData.targetCompany||"")} target="_blank" rel="noreferrer"
+                      style={{display:"inline-flex",alignItems:"center",background:C.amber,color:C.cream,borderRadius:"10px",padding:"10px 20px",fontSize:"13px",fontWeight:600,textDecoration:"none",gap:"6px"}}>
+                      Start interview simulation — ₹999 →
+                    </a>
+                  </div>
+
+                  {/* The Brief — for next application */}
+                  <div className="fade-in" style={{background:C.mist,border:"1px solid "+C.border,borderRadius:"14px",padding:"16px 20px"}}>
+                    <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:C.soft,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"6px"}}>Next time you apply for a new role</div>
+                    <p style={{fontSize:"13px",color:C.soft,lineHeight:1.6,marginBottom:"10px"}}>The Application Brief asks you five questions before you apply — so you know exactly how to position yourself, what to emphasise, and the angle to lead with. Free.</p>
+                    <a href="https://tcb-application-brief.vercel.app" target="_blank" rel="noreferrer"
+                      style={{fontSize:"13px",color:C.amber,fontWeight:600,textDecoration:"none"}}>
+                      Start your brief →
+                    </a>
+                  </div>
                 </div>
               </div>
             )}
