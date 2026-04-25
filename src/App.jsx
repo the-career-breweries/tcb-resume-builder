@@ -542,11 +542,16 @@ export default function App() {
               )}
             </SectionCard>
 
-            {/* Headline — always shown */}
+            {/* Headline — voice first */}
             <SectionCard>
               <SectionTitle>Your Headline</SectionTitle>
-              <p style={{fontSize:"13px",color:C.soft,marginBottom:"12px",lineHeight:1.6}}>One line that says who you are professionally.</p>
-              <input type="text" value={formData.headline||""} onChange={e=>set("headline",e.target.value)} placeholder="Learning & Development Specialist with 6+ years in corporate training"/>
+              <p style={{fontSize:"13px",color:C.soft,marginBottom:"12px",lineHeight:1.6}}>One sentence — who you are professionally, and what you bring. Speak it naturally.</p>
+              <VoiceInput
+                value={formData.headline||""}
+                onChange={v=>set("headline",v)}
+                placeholder="Speak your headline…"
+                rows={2}
+              />
             </SectionCard>
 
             {!isMobile&&<div style={{display:"flex",gap:"12px"}}><Btn onClick={()=>goTo(2)} disabled={!formData.name||!formData.email||!formData.forSpecificRole}>Continue →</Btn></div>}
