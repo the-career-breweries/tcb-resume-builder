@@ -8,6 +8,7 @@ let C = { ...LIGHT };
 const globalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { zoom: 1.5; }
   body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; transition: background 0.3s ease; }
   @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
   @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -252,7 +253,7 @@ export default function App() {
   const topRef = useRef(null);
 
   // Theme
-  const [isDark,setIsDark] = useState(()=>{ try{return localStorage.getItem("tcb_theme")==="dark";}catch{return false;} });
+  const [isDark,setIsDark] = useState(()=>{ try{const t=localStorage.getItem("tcb_theme");return t===null?true:t==="dark";}catch{return true;} });
   const themeColors = isDark?DARK:LIGHT;
   Object.assign(C, themeColors);
   const toggleTheme = ()=>setIsDark(d=>{const n=!d;try{localStorage.setItem("tcb_theme",n?"dark":"light");}catch{}return n;});
