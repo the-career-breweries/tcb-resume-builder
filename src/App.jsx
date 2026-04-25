@@ -272,7 +272,7 @@ export default function App() {
   const [formData, setFormData] = useState(savedSession?.formData || {
     name:"", email:"", phone:"", location:"", linkedin:"",
     headline:"", summary:"", summaryVoice:"",
-    targetTitle: urlJobTitle, targetCompany: urlCompany, jobDescription:"",
+    targetTitle: urlJobTitle, targetCompany: urlCompany, jobDescription:"", forSpecificRole: urlJobTitle?"yes":null,
     experience:[{ company:"", title:"", startDate:"", endDate:"", location:"", voiceText:"", notes:"" }],
     education:[{ degree:"", institution:"", startYear:"", endYear:"", location:"", grade:"" }],
     certifications:[], skills:"", skillsVoice:"",
@@ -351,7 +351,7 @@ export default function App() {
   const handleGenerate = async () => {
     setGenerating(true); setGenError("");
     try {
-      const res=await fetch("/api/build-resume",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({formData,briefData,jobTitle:formData.targetTitle,company:formData.targetCompany,jobDescription:formData.jobDescription})});
+      const res=await fetch("/api/build-resume",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({formData,briefData,jobTitle:formData.forSpecificRole==="yes"?formData.targetTitle:"",company:formData.forSpecificRole==="yes"?formData.targetCompany:"",jobDescription:formData.forSpecificRole==="yes"?formData.jobDescription:""})});
       const d=await res.json();
       if(!res.ok||!d.resume){setGenError(d.error||"Generation failed. Please try again.");setGenerating(false);return;}
       setGeneratedResume(d.resume);
@@ -416,7 +416,7 @@ export default function App() {
         </div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-        {!isMobile&&<div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.soft}}>₹2,499</div>}
+
         {step>0&&<button onClick={clearAll} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.soft,background:"transparent",border:"1px solid "+C.border,borderRadius:"8px",padding:"5px 10px",cursor:"pointer"}} onMouseEnter={e=>{e.currentTarget.style.color=C.amber;e.currentTarget.style.borderColor=C.amber;}} onMouseLeave={e=>{e.currentTarget.style.color=C.soft;e.currentTarget.style.borderColor=C.border;}}>+ New Build</button>}
         <button onClick={toggleTheme} style={{display:"flex",alignItems:"center",gap:"4px",background:isDark?"rgba(255,255,255,0.08)":"rgba(28,20,16,0.07)",border:"1.5px solid "+C.border,borderRadius:"20px",padding:"4px 9px 4px 6px",cursor:"pointer"}}>
           <div style={{width:"22px",height:"13px",borderRadius:"7px",background:isDark?C.amber:C.border,position:"relative",flexShrink:0,transition:"background .25s"}}>
@@ -448,7 +448,8 @@ export default function App() {
           <div className="fade-up" style={{paddingBottom:"60px"}}>
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"11px",color:C.amber,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:"20px"}}>Resume Builder</div>
             <h1 style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?"clamp(30px,8vw,40px)":"clamp(34px,6vw,50px)",fontWeight:400,color:C.dark,lineHeight:1.15,marginBottom:"16px"}}>Build your resume<br/><em style={{color:C.amber}}>from scratch.</em></h1>
-            <p style={{fontSize:isMobile?"14px":"16px",color:C.soft,lineHeight:1.75,maxWidth:"480px",marginBottom:"28px"}}>No template. No guesswork. You speak your experience, we write the resume — aligned to the role you're targeting. ₹2,499.</p>
+            <p style={{fontSize:isMobile?"14px":"16px",color:C.soft,lineHeight:1.75,maxWidth:"480px",marginBottom:"12px"}}>No template. No guesswork. You speak your experience, we write the resume.</p>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"13px",color:C.amber,letterSpacing:"0.04em",marginBottom:"24px"}}>₹2,499 · Pay only when you're ready to generate</div>
             <div style={{display:"flex",gap:"12px",flexDirection:isMobile?"column":"row",marginBottom:"32px"}}>
               <Btn onClick={()=>goTo(1)} full={isMobile}>Start building →</Btn>
               <a href="https://tcb-application-brief.vercel.app" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",fontSize:"13px",color:C.soft,textDecoration:"none",padding:"13px 20px",border:"1px solid "+C.border,borderRadius:"12px"}} onMouseEnter={e=>{e.currentTarget.style.borderColor=C.amber;e.currentTarget.style.color=C.amber;}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.color=C.soft;}}>Write a brief first →</a>
@@ -505,24 +506,54 @@ export default function App() {
               </div>
             </SectionCard>
 
+            {/* Role toggle */}
             <SectionCard>
-              <SectionTitle>Target Role</SectionTitle>
-              <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"14px"}}>
-                <div><Lbl>Job Title</Lbl><input type="text" value={formData.targetTitle} onChange={e=>set("targetTitle",e.target.value)} placeholder="Senior Trainer"/></div>
-                <div><Lbl>Company</Lbl><input type="text" value={formData.targetCompany} onChange={e=>set("targetCompany",e.target.value)} placeholder="Acme Inc."/></div>
+              <SectionTitle>Are you building this resume for a specific role?</SectionTitle>
+              <div style={{display:"flex",gap:"10px",marginBottom: formData.forSpecificRole ? "20px" : "0"}}>
+                {["yes","no"].map(v => (
+                  <button key={v} onClick={()=>{ set("forSpecificRole", v); if(v==="no"){ set("targetTitle",""); set("targetCompany",""); set("jobDescription",""); } }}
+                    style={{flex:1,padding:"13px",borderRadius:"12px",border:"1.5px solid "+(formData.forSpecificRole===v?C.amber:C.border),background:formData.forSpecificRole===v?"rgba(201,123,42,0.08)":"transparent",color:formData.forSpecificRole===v?C.amber:C.soft,fontSize:"14px",fontWeight:formData.forSpecificRole===v?600:400,cursor:"pointer",transition:"all .2s"}}>
+                    {v==="yes"?"Yes, I have a role in mind":"No, building a general resume"}
+                  </button>
+                ))}
               </div>
-              <div style={{marginTop:"14px"}}><Lbl note="paste the full JD">Job Description</Lbl>
-                <textarea rows={7} value={formData.jobDescription} onChange={e=>set("jobDescription",e.target.value)} placeholder="Paste the full job description here…" style={{minHeight:"140px"}}/>
-                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"11px",color:C.soft,textAlign:"right",marginTop:"4px"}}>{(formData.jobDescription||"").trim().length} chars</div>
-              </div>
-              <div style={{marginTop:"14px"}}><Lbl>Your Headline</Lbl><input type="text" value={formData.headline} onChange={e=>set("headline",e.target.value)} placeholder="Learning & Development Specialist with 6+ years in corporate training"/></div>
+
+              {formData.forSpecificRole==="yes" && (
+                <div className="fade-in" style={{display:"flex",flexDirection:"column",gap:"14px"}}>
+                  <div style={{background:"rgba(201,123,42,0.06)",border:"1px solid rgba(201,123,42,0.2)",borderRadius:"10px",padding:"12px 16px"}}>
+                    <p style={{fontSize:"13px",color:C.ink,lineHeight:1.6}}>Good. The JD will shape your summary, bullets, and skills — making this resume specific to this role. This is The Brief + Resume Build in one.</p>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"14px"}}>
+                    <div><Lbl>Job Title</Lbl><input type="text" value={formData.targetTitle||""} onChange={e=>set("targetTitle",e.target.value)} placeholder="Senior Trainer"/></div>
+                    <div><Lbl>Company <span style={{fontWeight:400,color:C.soft,fontSize:"10px"}}>optional</span></Lbl><input type="text" value={formData.targetCompany||""} onChange={e=>set("targetCompany",e.target.value)} placeholder="Acme Inc."/></div>
+                  </div>
+                  <div>
+                    <Lbl note="paste the full JD for best results">Job Description</Lbl>
+                    <textarea rows={6} value={formData.jobDescription||""} onChange={e=>set("jobDescription",e.target.value)} placeholder="Paste the full job description here…" style={{minHeight:"130px"}}/>
+                    <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"11px",color:C.soft,textAlign:"right",marginTop:"4px"}}>{(formData.jobDescription||"").trim().length} chars</div>
+                  </div>
+                </div>
+              )}
+
+              {formData.forSpecificRole==="no" && (
+                <div className="fade-in" style={{background:C.mist,borderRadius:"10px",padding:"12px 16px"}}>
+                  <p style={{fontSize:"13px",color:C.soft,lineHeight:1.6}}>We'll build a strong general resume from your experience and voice inputs. You can always use the Rewriter later to tailor it to a specific role.</p>
+                </div>
+              )}
             </SectionCard>
 
-            {!isMobile&&<div style={{display:"flex",gap:"12px"}}><Btn onClick={()=>goTo(2)} disabled={!formData.name||!formData.email||!formData.targetTitle}>Continue →</Btn></div>}
+            {/* Headline — always shown */}
+            <SectionCard>
+              <SectionTitle>Your Headline</SectionTitle>
+              <p style={{fontSize:"13px",color:C.soft,marginBottom:"12px",lineHeight:1.6}}>One line that says who you are professionally.</p>
+              <input type="text" value={formData.headline||""} onChange={e=>set("headline",e.target.value)} placeholder="Learning & Development Specialist with 6+ years in corporate training"/>
+            </SectionCard>
+
+            {!isMobile&&<div style={{display:"flex",gap:"12px"}}><Btn onClick={()=>goTo(2)} disabled={!formData.name||!formData.email||!formData.forSpecificRole}>Continue →</Btn></div>}
           </div>
         </div>
       </div>
-      <MobileBar onBack={()=>goTo(0)} onNext={()=>goTo(2)} nextDisabled={!formData.name||!formData.email||!formData.targetTitle}/>
+      <MobileBar onBack={()=>goTo(0)} onNext={()=>goTo(2)} nextDisabled={!formData.name||!formData.email||!formData.forSpecificRole}/>
     </>
   );
 
@@ -683,7 +714,8 @@ export default function App() {
           <Header/>
           <div className="fade-up" style={{paddingBottom:isMobile?"100px":"40px",display:"flex",flexDirection:"column",gap:"20px"}}>
             <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>05 / 05 — Almost there</div>
-            <h2 style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?"22px":"28px",fontWeight:400,color:C.dark,lineHeight:1.25}}>One payment. Your resume is ready in minutes.</h2></div>
+            <h2 style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?"22px":"28px",fontWeight:400,color:C.dark,lineHeight:1.25}}>Ready to build. Pay once, download your resume.</h2>
+            <p style={{fontSize:"14px",color:C.soft,lineHeight:1.65,marginTop:"8px",maxWidth:"480px"}}>We've collected everything we need. One payment unlocks the generation — your complete resume, written by AI from your inputs, ready to download in under a minute.</p></div>
 
             {/* Summary of what they've filled */}
             <SectionCard>
@@ -691,7 +723,7 @@ export default function App() {
               <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
                 {[
                   {l:"Name",v:formData.name},
-                  {l:"Target role",v:`${formData.targetTitle} at ${formData.targetCompany}`},
+                  {l:"Role",v:formData.forSpecificRole==="yes"&&formData.targetTitle?(formData.targetTitle+(formData.targetCompany?" at "+formData.targetCompany:"")):(formData.forSpecificRole==="no"?"General resume":"—")},
                   {l:"Summary",v:formData.summaryVoice?"✓ Voice recorded":"—"},
                   {l:"Roles",v:`${formData.experience.filter(e=>e.company).length} role(s)`},
                   {l:"Education",v:`${formData.education.filter(e=>e.institution).length} degree(s)`},
