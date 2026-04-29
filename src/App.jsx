@@ -409,7 +409,8 @@ export default function App() {
 
   // ── Header ──────────────────────────────────────────────────────────────────
   const Header = () => (
-    <header style={{padding:isMobile?"13px 0":"18px 0",borderBottom:"1px solid "+C.border,marginBottom:isMobile?"28px":"44px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    <header style={{position:"sticky",top:0,zIndex:100,backdropFilter:"blur(14px)",WebkitBackdropFilter:"blur(14px)",background:isDark?"rgba(20,16,8,0.92)":"rgba(250,243,232,0.92)",width:"calc(100% + 48px)",marginLeft:"-24px",borderBottom:"1px solid "+C.border,marginBottom:isMobile?"24px":"36px"}}>
+      <div style={{maxWidth:"680px",margin:"0 auto",padding:isMobile?"0 16px":"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:isMobile?"48px":"56px"}}>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
         <img src={isDark?"/favicon-dark.png":"/favicon-light.png"} alt="TCB" style={{width:"34px",height:"34px",objectFit:"contain",mixBlendMode:isDark?"normal":"multiply"}}/>
         <div>
@@ -426,6 +427,8 @@ export default function App() {
           </div>
           {!isMobile&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:C.soft}}>{isDark?"Dark":"Light"}</span>}
         </button>
+      </div>
+    
       </div>
     </header>
   );
