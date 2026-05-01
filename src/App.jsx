@@ -497,7 +497,7 @@ export default function App() {
         <div style={G()}>
           <Header/>
           <div className="fade-up" style={{paddingBottom:isMobile?"100px":"40px",display:"flex",flexDirection:"column",gap:"20px"}}>
-            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>01 / 05 — The Basics</div>
+            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>— The Basics</div>
             <h2 style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?"22px":"28px",fontWeight:400,color:C.dark,lineHeight:1.25}}>Let's start with you.</h2></div>
 
             <SectionCard>
@@ -575,7 +575,7 @@ export default function App() {
         <div style={G()}>
           <Header/>
           <div className="fade-up" style={{paddingBottom:isMobile?"100px":"40px",display:"flex",flexDirection:"column",gap:"20px"}}>
-            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>02 / 05 — Your Story</div>
+            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>— Your Story</div>
             <h2 style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?"22px":"28px",fontWeight:400,color:C.dark,lineHeight:1.25}}>Tell me about yourself.</h2>
             <p style={{fontSize:"14px",color:C.soft,lineHeight:1.65,marginTop:"8px",maxWidth:"480px"}}>This becomes your professional summary. Speak naturally — why you do what you do, what you're best at, and what you bring to this role. 60–90 seconds is ideal.</p>
             {briefData&&<div style={{marginTop:"10px",background:C.mist,border:"1px solid "+C.border,borderRadius:"10px",padding:"12px 16px"}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:C.amber,letterSpacing:"0.1em",textTransform:"uppercase"}}>Brief context loaded</span><p style={{fontSize:"12px",color:C.soft,marginTop:"4px",lineHeight:1.5}}>Your brief answers will also shape this summary.</p></div>}
@@ -600,7 +600,7 @@ export default function App() {
         <div style={G()}>
           <Header/>
           <div className="fade-up" style={{paddingBottom:isMobile?"100px":"40px",display:"flex",flexDirection:"column",gap:"20px"}}>
-            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>03 / 05 — Experience & Education</div>
+            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>— Experience & Education</div>
             <h2 style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?"22px":"28px",fontWeight:400,color:C.dark,lineHeight:1.25}}>Your work history.</h2>
             <p style={{fontSize:"14px",color:C.soft,lineHeight:1.65,marginTop:"8px",maxWidth:"480px"}}>Fill in the facts. Then speak what you actually did — we'll turn that into sharp bullet points.</p></div>
 
@@ -659,7 +659,7 @@ export default function App() {
         <div style={G()}>
           <Header/>
           <div className="fade-up" style={{paddingBottom:isMobile?"100px":"40px",display:"flex",flexDirection:"column",gap:"20px"}}>
-            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>04 / 05 — Skills & More</div>
+            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>— Skills & More</div>
             <h2 style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?"22px":"28px",fontWeight:400,color:C.dark,lineHeight:1.25}}>What else makes you you?</h2></div>
 
             {/* Certifications */}
@@ -723,7 +723,7 @@ export default function App() {
         <div style={G()}>
           <Header/>
           <div className="fade-up" style={{paddingBottom:isMobile?"100px":"40px",display:"flex",flexDirection:"column",gap:"20px"}}>
-            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>05 / 05 — Almost there</div>
+            <div><div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"6px"}}>— Almost there</div>
             <h2 style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?"22px":"28px",fontWeight:400,color:C.dark,lineHeight:1.25}}>Ready to build. Pay once, download your resume.</h2>
             <p style={{fontSize:"14px",color:C.soft,lineHeight:1.65,marginTop:"8px",maxWidth:"480px"}}>We've collected everything we need. One payment unlocks the generation — your complete resume, written by AI from your inputs, ready to download in under a minute.</p></div>
 
