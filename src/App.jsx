@@ -8,8 +8,9 @@ let C = { ...LIGHT };
 const globalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { zoom: 1.5; }
-  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; transition: background 0.3s ease; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; transition: background 0.3s ease; overflow-x: hidden; }
+  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+  input, textarea, select, button { touch-action: manipulation; }
   @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
   @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
   @keyframes pulse { 0%,100%{opacity:.4;transform:scale(.95);}50%{opacity:1;transform:scale(1.05);} }
@@ -435,7 +436,7 @@ export default function App() {
 
   // ── Sticky mobile bottom bar ─────────────────────────────────────────────────
   const MobileBar = ({onBack,onNext,nextLabel,nextDisabled}) => isMobile ? (
-    <div style={{position:"fixed",bottom:0,left:0,right:0,padding:"12px 16px",background:themeColors.bg,borderTop:"1px solid "+C.border,zIndex:100,display:"flex",gap:"10px"}}>
+    <div style={{position:"fixed",bottom:0,left:0,right:0,padding:"12px 16px env(safe-area-inset-bottom,0) 16px",background:themeColors.bg,borderTop:"1px solid "+C.border,zIndex:100,display:"flex",gap:"10px"}}>
       {onBack&&<button onClick={onBack} style={{background:"transparent",color:C.soft,border:"1.5px solid "+C.border,borderRadius:"12px",padding:"13px 18px",fontSize:"15px",cursor:"pointer",flexShrink:0}}>←</button>}
       <button onClick={onNext} disabled={nextDisabled} style={{flex:1,background:nextDisabled?C.border:C.amber,color:nextDisabled?C.soft:C.cream,border:"none",borderRadius:"12px",padding:"13px",fontSize:"15px",fontWeight:600,cursor:nextDisabled?"not-allowed":"pointer",transition:"all .2s"}}>{nextLabel||"Continue →"}</button>
     </div>
