@@ -287,6 +287,71 @@ export default function App() {
   const [generatedResume, setGeneratedResume] = useState(savedSession?.generatedResume || null);
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState("");
+  const [editingField, setEditingField] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [editedFields, setEditedFields] = useState({});
+
+  const getField = (key) => editedFields[key] !== undefined ? editedFields[key] : (generatedResume?.[key]);
+
+  const openFieldEdit = (key) => {
+    const val = getField(key);
+    setEditingField(key);
+    if (typeof val === "string") setEditText(val);
+    else if (Array.isArray(val) && key === "competencies") setEditText(val.join("\n"));
+    else if (Array.isArray(val) && key === "experience") {
+      setEditText(val.map(r =>
+        `${r.title} — ${r.company} | ${r.startDate}–${r.endDate} | ${r.location}\n` +
+        (r.bullets||[]).map(b=>`• ${b}`).join("\n")
+      ).join("\n\n"));
+    }
+    else if (Array.isArray(val) && (key==="education"||key==="certifications")) {
+      setEditText(val.map(e=>
+        key==="education"
+          ? `${e.degree} — ${e.institution} | ${e.endYear} | ${e.location}`
+          : `${e.name} — ${e.provider} | ${e.year}`
+      ).join("\n"));
+    }
+    else setEditText(String(val||""));
+  };
+
+  const saveFieldEdit = () => {
+    const key = editingField;
+    const text = editText.trim();
+    if (key==="summary" || key==="tagline") {
+      setEditedFields(p=>({...p,[key]:text}));
+    } else if (key==="competencies") {
+      setEditedFields(p=>({...p,[key]:text.split("\n").map(s=>s.trim()).filter(Boolean)}));
+    } else if (key==="experience") {
+      const blocks = text.split(/\n\n+/);
+      const parsed = blocks.map(block=>{
+        const lines = block.split("\n");
+        const header = lines[0]||"";
+        const [titleCo,...rest] = header.split("|");
+        const [title,company] = titleCo.split("—").map(s=>s.trim());
+        const [dates,loc] = rest.map(s=>s.trim());
+        const [sd,ed] = (dates||"").split("–").map(s=>s.trim());
+        const bullets = lines.slice(1).map(l=>l.replace(/^•\s*/,"").trim()).filter(Boolean);
+        return {title:title||"",company:company||"",startDate:sd||"",endDate:ed||"",location:loc||"",bullets};
+      });
+      setEditedFields(p=>({...p,[key]:parsed}));
+    } else if (key==="education") {
+      setEditedFields(p=>({...p,[key]:text.split("\n").filter(Boolean).map(l=>{
+        const [degInst,...rest]=l.split("|");
+        const [degree,institution]=degInst.split("—").map(s=>s.trim());
+        const [year,location]=rest.map(s=>s.trim());
+        return {degree:degree||"",institution:institution||"",endYear:year||"",location:location||""};
+      })}));
+    } else if (key==="certifications") {
+      setEditedFields(p=>({...p,[key]:text.split("\n").filter(Boolean).map(l=>{
+        const [nameProv,yr]=l.split("|");
+        const [name,provider]=nameProv.split("—").map(s=>s.trim());
+        return {name:name||"",provider:provider||"",year:(yr||"").trim()};
+      })}));
+    } else {
+      setEditedFields(p=>({...p,[key]:text}));
+    }
+    setEditingField(null);
+  };
   const [compactLevel, setCompactLevel] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const briefRef = useRef(null);
@@ -380,14 +445,16 @@ export default function App() {
 
   const downloadWord = () => {
     if(!generatedResume) return;
-    const blob=new Blob(["\ufeff",buildResumeHTML(generatedResume,compactLevel)],{type:"application/vnd.ms-word"});
+    const merged = {...generatedResume,...editedFields};
+    const blob=new Blob(["\ufeff",buildResumeHTML(merged,compactLevel)],{type:"application/vnd.ms-word"});
     const url=URL.createObjectURL(blob); const a=document.createElement("a");
     a.href=url; a.download="resume.doc"; document.body.appendChild(a); a.click();
     setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},1000);
   };
   const downloadPDF = () => {
     if(!generatedResume) return;
-    const blob=new Blob([buildResumeHTML(generatedResume,compactLevel)],{type:"text/html;charset=utf-8"});
+    const merged = {...generatedResume,...editedFields};
+    const blob=new Blob([buildResumeHTML(merged,compactLevel)],{type:"text/html;charset=utf-8"});
     const url=URL.createObjectURL(blob); const tab=window.open(url,"_blank");
     if(tab) tab.addEventListener("load",()=>URL.revokeObjectURL(url),{once:true});
   };
@@ -810,8 +877,46 @@ export default function App() {
                   <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>
                     Done ✓ {compactLevel>0&&<span style={{color:C.soft}}>{compactLevel===1?"· Tightened to 1 page":"· Formatted for 1.75 pages"}</span>}
                   </div>
-                  <p style={{fontSize:"14px",color:C.ink,lineHeight:1.6,marginBottom:"14px"}}><strong>{generatedResume.name}</strong> · {generatedResume.tagline}</p>
-                  <div style={{display:"flex",gap:"10px",flexWrap:"wrap"}}>
+                  <p style={{fontSize:"14px",color:C.ink,lineHeight:1.6,marginBottom:"14px"}}><strong>{generatedResume.name}</strong> · {getField("tagline")||generatedResume.tagline}</p>
+
+                  {/* Section previews with edit buttons */}
+                  {["summary","competencies","experience","education","certifications"].map(key=>{
+                    const val = getField(key);
+                    if(!val) return null;
+                    const labels = {summary:"Profile Summary",competencies:"Core Competencies",experience:"Employment History",education:"Education",certifications:"Certifications"};
+                    return (
+                      <div key={key} style={{background:themeColors.bg,border:"1px solid "+C.border,borderRadius:"10px",padding:"12px 16px",marginBottom:"8px"}}>
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"8px"}}>
+                          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:C.amber,letterSpacing:"0.1em",textTransform:"uppercase"}}>{labels[key]}{editedFields[key]!==undefined&&<span style={{color:C.soft,marginLeft:"6px"}}>· edited</span>}</span>
+                          <button onClick={()=>openFieldEdit(key)} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:"6px",padding:"3px 10px",fontSize:"10px",color:C.soft,cursor:"pointer",fontFamily:"'JetBrains Mono',monospace",transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor=C.amber;e.currentTarget.style.color=C.amber;}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.color=C.soft;}}>✏ edit</button>
+                        </div>
+                        {typeof val==="string"&&<p style={{fontSize:"12px",color:C.ink,lineHeight:1.65}}>{val}</p>}
+                        {Array.isArray(val)&&key==="competencies"&&<div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>{val.map((s,i)=><span key={i} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.soft,background:"rgba(201,123,42,0.08)",borderRadius:"5px",padding:"3px 8px"}}>{s}</span>)}</div>}
+                        {Array.isArray(val)&&key==="experience"&&val.map((r,i)=><div key={i} style={{marginBottom:"10px"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:"2px"}}><span style={{fontSize:"12px",fontWeight:600,color:C.ink}}>{r.company}</span><span style={{fontSize:"11px",color:C.soft}}>{r.startDate}–{r.endDate}</span></div><div style={{fontSize:"11px",color:C.soft,fontStyle:"italic",marginBottom:"4px"}}>{r.title}</div>{(r.bullets||[]).map((b,j)=><div key={j} style={{display:"flex",gap:"6px",marginBottom:"2px"}}><span style={{color:C.amber,flexShrink:0}}>·</span><span style={{fontSize:"11px",color:C.ink,lineHeight:1.6}}>{b}</span></div>)}</div>)}
+                        {Array.isArray(val)&&(key==="education"||key==="certifications")&&val.map((e,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}><span style={{fontSize:"12px",color:C.ink}}><strong>{key==="education"?e.degree:e.name}</strong>, {key==="education"?e.institution:e.provider}</span><span style={{fontSize:"11px",color:C.soft}}>{key==="education"?e.endYear:e.year}</span></div>)}
+                      </div>
+                    );
+                  })}
+
+                  {/* Edit modal */}
+                  {editingField && (
+                    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}} onClick={()=>setEditingField(null)}>
+                      <div style={{background:themeColors.mist,border:"1.5px solid "+C.border,borderRadius:"16px",padding:"24px",width:"100%",maxWidth:"560px",display:"flex",flexDirection:"column",gap:"14px",maxHeight:"80vh"}} onClick={e=>e.stopPropagation()}>
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",color:C.amber,letterSpacing:"0.1em",textTransform:"uppercase"}}>Editing: {{summary:"Profile Summary",competencies:"Core Competencies",experience:"Employment History",education:"Education",certifications:"Certifications"}[editingField]}</div>
+                          <button onClick={()=>setEditingField(null)} style={{background:"none",border:"none",color:C.soft,fontSize:"16px",cursor:"pointer"}}>✕</button>
+                        </div>
+                        <p style={{fontSize:"12px",color:C.soft,lineHeight:1.55}}>Edit below. Bullet points: one per line starting with •. Experience blocks separated by blank line.</p>
+                        <textarea value={editText} onChange={e=>setEditText(e.target.value)} style={{flex:1,minHeight:"220px",resize:"vertical",fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:"14px",color:C.ink,background:themeColors.bg,border:"1.5px solid "+C.border,borderRadius:"10px",padding:"12px 14px",lineHeight:1.7,outline:"none"}}/>
+                        <div style={{display:"flex",gap:"10px",justifyContent:"flex-end"}}>
+                          <button onClick={()=>setEditingField(null)} style={{background:"transparent",border:"1px solid "+C.border,borderRadius:"10px",padding:"9px 18px",fontSize:"13px",color:C.soft,cursor:"pointer"}}>Cancel</button>
+                          <button onClick={saveFieldEdit} style={{background:C.amber,border:"none",borderRadius:"10px",padding:"9px 22px",fontSize:"13px",fontWeight:700,color:themeColors.cream,cursor:"pointer"}}>Save changes</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{display:"flex",gap:"10px",flexWrap:"wrap",marginTop:"12px"}}>
                     <Btn onClick={downloadWord}>↓ Download Word</Btn>
                     <Ghost onClick={downloadPDF}>↓ Download PDF</Ghost>
                   </div>
